@@ -30,15 +30,11 @@ product_name = product_name_tag.text.strip()
 current_time = datetime.datetime.now()
 
 # print the value
-print(colored(f"Product: {product_name} \nPrice: {product_value}", "yellow"))
+print(colored("Product: " + product_name + "\nPrice: " + product_value, "yellow"))
 
 # Connect to database, it will create if not exists 
 conn = sqlite3.connect('database.db')
 cursor = conn.cursor()
-
-# Check if the URL already exists in the products table
-cursor.execute('SELECT id FROM products WHERE url = ?', (url,) )
-existing_product = cursor.fetchone()
 
 # Create the tables if not exists
 cursor.execute('''
@@ -60,6 +56,10 @@ cursor.execute('''
     )
 ''')
 
+# Check if the URL already exists in the products table
+cursor.execute('SELECT id FROM products WHERE url = ?', (url,) )
+existing_product = cursor.fetchone()
+
 # Insert into products table if the URL does not exist
 if existing_product:
     # URL already exists, get the product_id
@@ -79,8 +79,6 @@ else:
 cursor.execute('''
     INSERT INTO prices (product_id, price, scrape_datetime) VALUES (?, ?, ?)
 ''', (product_id, product_value, current_time))
-
-
 
 conn.commit()
 
